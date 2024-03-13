@@ -94,6 +94,9 @@ export default defineComponent({
     watchEffect(() => addNodeBtn.value = props.edit && props.addNodeBtn)
     watchEffect(() => mmprops.value.drag = props.drag)
     watchEffect(() => mmprops.value.edit = props.edit)
+    // 新增选择标签事件
+    watchEffect(() => emitter.on('selectLabel', (val) => context.emit('selectLabel', val)))
+
     // onMounted
     onMounted(() => {
       if (!svgEle.value || !gEle.value || !asstSvgEle.value || !foreignEle.value || !foreignDivEle.value) { return }
@@ -133,6 +136,12 @@ export default defineComponent({
     })
     watch(() => props.zoom, (val) => switchZoom(val))
     watch(() => props.ctm, (val) => switchContextmenu(val))
+
+    //新增绑定数据变化时触发重绘
+    watch(() => props.modelValue, () => {
+      emitter.emit('mmdata', new ImData(cloneDeep(props.modelValue[0]), xGap, yGap, getSize))
+      draw()
+    })
 
     return {
       wrapperEle,
